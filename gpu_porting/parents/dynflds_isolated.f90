@@ -8,19 +8,17 @@ CONTAINS
 
   SUBROUTINE dynflds_gpu()
     USE bcldprc_ak_mod, ONLY: bcldprc_ak_gpu
-    USE vertnhy_wrf_mod, ONLY: vertnhy_wrf_gpu
-    USE layht_mod, ONLY: layht_gpu
-    USE getpblht_mod, ONLY: getpblht_gpu
+    USE metvars2ctm_mod, ONLY: metvars2ctm_gpu
+    USE pblsup_mod, ONLY: pblsup_gpu
     IMPLICIT NONE
 
     PRINT *, "🚀 Exécution de dynflds_gpu..."
 
     !$acc data copyin(ncols_x, nrows_x, metlay)
     
-    ! Appels aux routines GPU
-    CALL vertnhy_wrf_gpu()
-    CALL layht_gpu(1, metlay, 1, metlay)
-    CALL getpblht_gpu()
+    ! Appels aux routines parentes GPU
+    CALL metvars2ctm_gpu()
+    CALL pblsup_gpu()
     CALL bcldprc_ak_gpu()
     
     !$acc end data
