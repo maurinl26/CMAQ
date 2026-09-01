@@ -1,0 +1,35 @@
+# Dockerfile pour CMAQ GPU avec cuGraphs
+FROM nvcr.io/nvidia/nvhpc:23.11-devel-cuda12.3-ubuntu22.04
+
+# Installer les dépendances système
+RUN apt-get update -y && apt-get install -y \
+    build-essential \
+    python3-dev \
+    python3-pip \
+    python3-venv \
+    git \
+    wget \
+    cmake \
+    libopenmpi-dev \
+    openmpi-bin
+
+# Installer cuGraphs et RAPIDS
+RUN pip3 install --extra-index-url=https://pypi.nvidia.com \
+    cugraph-cu12==23.12.* \
+    cuml-cu12==23.12.* \
+    cudf-cu12==23.12.* \
+    numpy \
+    cython \
+    setuptools \
+    wheel
+
+# Copier le code CMAQ et le wrapper cuGraphs
+COPY ./gpu_porting /opt/cmaq_gpu
+WORKDIR /opt/cmaq_gpu
+
+# Compiler le wrapper cuGraphs
+RUN python3 setup.py build_ext --inplace
+
+# Configurer l'environnement
+ENV PATH="/opt/nvidia/hpc_sdk/Linux_x86_64/23.11/compilers/bin:${PATH}"
+ENV LD_LIBRARY_PATH="/opt/nvidia/hpc_sdk/Linux_x86_64/23.11/compilers/lib:${LD_LIBRARY_PATH}"

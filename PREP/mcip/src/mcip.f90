@@ -80,6 +80,7 @@ PROGRAM mcip
   USE date_pack
   USE date_time
   USE files
+  USE gpu_kernels_mod, ONLY: run_gpu_kernels
 
   IMPLICIT NONE
 
@@ -166,7 +167,7 @@ PROGRAM mcip
       first = .FALSE.
     ENDIF
 
-    CALL dynflds                      ! Put time-varying fields on MCIP grid.
+    CALL run_gpu_kernels              ! Exécuter les kernels GPU via cuGraphs.
 
     CALL ctmproc                      ! Parse and process time-varying data.
     CALL gridout (sdate, stime)       ! Output time-independent data.
